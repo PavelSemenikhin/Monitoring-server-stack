@@ -1,0 +1,33 @@
+auth_enabled: false
+
+server:
+  http_listen_port: 3100
+
+common:
+  path: /loki
+
+  storage:
+    filesystem:
+      chunks_directory: /loki/chunks
+      rules_directory: /loki/rules
+  # Кількість реплік
+  replication_factor: 1
+
+schema_config:
+  configs:
+    - from: 2026-01-01
+      store: tsdb
+      object_store: filesystem
+      schema: v13
+      index:
+        prefix: index_
+        # Період створення індексу
+        period: 24h
+
+limits_config:
+  retention_period: 720h
+
+table_manager:
+  retention_deletes_enabled: true
+  # 30d
+  retention_period: 720h

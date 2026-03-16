@@ -1,4 +1,4 @@
-- name: Deploy monitoring stack
+- name: Deploy ansible stack
   hosts: monitoring_node
   become: true
 
@@ -7,23 +7,29 @@
 
   tasks:
 
-    - name: Ensure monitoring directory exists
+    - name: Ensure monitoring directories exist
       ansible.builtin.file:
-        path: "{{ monitoring_dir }}"
+        path: "{{ item }}"
         state: directory
+        owner: root
+        group: root
         mode: "0755"
+      loop:
+        - "{{ monitoring_dir }}"
+        - "{{ monitoring_dir }}/configs"
+        - "{{ monitoring_dir }}/data"
 
     - name: Copy docker-compose file
       ansible.builtin.copy:
-        src: ../../compose/docker-compose.yml
+        src: ../../compose/monitoring/docker-compose.yml
         dest: "{{ monitoring_dir }}/docker-compose.yml"
 
     - name: Copy configs
       ansible.builtin.copy:
-        src: ../../compose/configs/
+        src: ../../compose/monitoring/configs/
         dest: "{{ monitoring_dir }}/configs/"
 
-    - name: Start monitoring stack
+    - name: Start ansible stack
       community.docker.docker_compose_v2:
         project_src: "{{ monitoring_dir }}"
         state: present
